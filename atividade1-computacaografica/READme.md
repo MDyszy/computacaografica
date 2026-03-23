@@ -1,35 +1,72 @@
-# Projeto - Pincel 
+# 🖌️ Pincel — Computação Gráfica
 
-**O projeto foi realizado para a disciplina de Computação Gráfica, ministrada por Hugo Alexandre Dantas do Nascimento no período 2026/01, na Universidade Federal de Goiás - UFG.**
-**O projeto será realizado de forma contínua durante o período da disciplina e por isso terá este arquivo alterado a cada parcial.**
-**Esse arquivo terá por objetivo a definição de parciais do que foi feito, fontes utilizadas e documentação do código em si.**
+> Aplicação de desenho livre em canvas controlada pelo teclado, desenvolvida com HTML, CSS e JavaScript puro.
 
-## Parcial número 1
-**Desenvolva um programa em HTML e Javascript que apresente uma tela branca e que permita que o usuário mova um quadrado preto de 8x8 pixels por meio de teclas do teclado, deixando um rastro.**
-**As teclas a serem usadas são as seguintes:**
-**8 e w/W - move para cima**
-**2 e x/X - move para baixo**
-**4 e a/A - move para esquerda**
-**6 e d/D - move para direita**
-**5 e s/S - limpa o desenho (pinta de branco a tela)**
-**ESC - encerra a aplicação**
+---
 
-**- Para a primeira parcial, foi decidida a utilização da API Canvas**
-**- Como elemento canvas, foi definido a tela visível do navegador (window.innerWidth e window.innerHeight)**
-**- Foram adicionados 2 eventos para a utilização do teclado.**
-**- Foram utilizadas definição simples de posição com elementos x e y. Além disso, foi definida uma variável "speed" que alterará a posição do pincel por meio das teclas "w/8", para cima; "a/4", para a esquerda; "d/6", para a direita; "x/2", para baixo.**
-**- Para apagar o desenho, foi definido a tecla "s/5". As teclas chamarão a função "eraseEverything que apagará o desenho da parte superior esquerda até os limites do elemento canva.**
-**- Para o pincel, foi desenhado um retângulo de 8px por 8px com fillRect e para a definição de cor fillStyle (function brush).**
-**- Foi definida uma função update que realizará o funcionamento da aplicação e possui requestAnimationFrame() para a animação da aplicação.**
+## 📌 Sobre o Projeto
 
-**As fontes utilizadas na primeira parcial para entendimento da API Canvas, Conhecimento de novas funções e sintaxe de JavaScript**
-**1 - https://www.youtube.com/watch?v=y84tBZo8GFo&t**
-**2 - https://www.youtube.com/watch?v=LQpxDIBPDMA**  
-**3 - https://www.youtube.com/watch?v=LyWSsZktVOg**
-**4 - https://www.udemy.com/course/formacao-front-end-html-css-javascript-react-e/ (Para entendimento de eventos)**
-**5 - https://www.youtube.com/watch?v=pUR5O9UO4Vc**
-**6 - https://www.youtube.com/watch?v=4vCBmu3z5FY**
-**7 - https://developer.mozilla.org/en-US/**
-**8 - Utilização de LLM (Claude) para o entendimento de: Arrow Functions, Eventos e funcionamento window.close().**
+Este repositório reúne as atividades práticas da disciplina de **Computação Gráfica**, ministrada pelo professor **Hugo Alexandre Dantas do Nascimento** no período **2026/01**, na **Universidade Federal de Goiás — UFG**.
 
-## Parcial número 2 
+---
+
+## 📋 Parcial 1
+
+### Enunciado
+
+Desenvolver um programa em HTML e JavaScript que apresente uma tela branca e permita ao usuário mover um quadrado preto de 8×8 pixels pelo teclado, deixando um rastro. Os controles exigidos eram:
+
+| Tecla | Alternativa | Ação |
+|---|---|---|
+| `W` | `8` | Mover para cima |
+| `X` | `2` | Mover para baixo |
+| `A` | `4` | Mover para esquerda |
+| `D` | `6` | Mover para direita |
+| `S` | `5` | Limpar o desenho |
+| `ESC` | — | Encerrar a aplicação |
+
+---
+
+### 🛠️ Decisões Técnicas
+
+- **API Canvas** foi escolhida como base para a renderização
+- O canvas foi dimensionado para ocupar a tela inteira do navegador via `window.innerWidth` e `window.innerHeight`
+- Dois eventos de teclado (`keydown` e `keyup`) foram adicionados para controle preciso do estado das teclas por meio de um objeto `keys`
+- A posição do pincel é controlada pelas variáveis `x` e `y`, iniciando no centro da tela, com uma variável `speed` definindo o deslocamento por frame
+- A função `brush()` desenha um retângulo de 8×8 pixels com `fillRect`, colorido via `fillStyle`
+- A função `eraseEverything()` limpa o canvas inteiro com `clearRect`
+- A função `borderLimit()` impede que o pincel ultrapasse os limites do canvas
+- A função `update()` centraliza o loop da aplicação e utiliza `requestAnimationFrame()` para animação contínua
+
+---
+
+### 📚 Fontes — Parcial 1
+
+Fontes utilizadas para entendimento da API Canvas, novas funções e sintaxe de JavaScript:
+
+1. [YouTube — Introdução ao Canvas](https://www.youtube.com/watch?v=y84tBZo8GFo&t)
+2. [YouTube — Canvas API](https://www.youtube.com/watch?v=LQpxDIBPDMA)
+3. [YouTube — Animações com Canvas](https://www.youtube.com/watch?v=LyWSsZktVOg)
+4. [Udemy — Formação Front-End: HTML, CSS, JavaScript, React](https://www.udemy.com/course/formacao-front-end-html-css-javascript-react-e/) *(para entendimento de eventos)*
+5. [YouTube — Eventos de teclado em JS](https://www.youtube.com/watch?v=pUR5O9UO4Vc)
+6. [YouTube — requestAnimationFrame](https://www.youtube.com/watch?v=4vCBmu3z5FY)
+7. [MDN Web Docs](https://developer.mozilla.org/en-US/)
+8. **LLM (Claude — Anthropic)** — utilizado para entendimento de: Arrow Functions, Eventos e funcionamento de `window.close()`
+
+## 🚀 Como Executar
+
+1. Clone o repositório
+2. Abra o arquivo `index.html` em qualquer navegador moderno
+3. Nenhuma dependência externa ou instalação é necessária
+
+```bash
+git clone https://github.com/MDyszy/computacaografica
+cd computacaografica/atividade1-computacaografica
+# Abra o index.html no navegador
+```
+
+---
+
+## 🤖 Nota sobre este README
+
+Este arquivo README foi **gerado com auxílio de Inteligência Artificial**, especificamente pelo modelo **Claude Sonnet 4.6**.
