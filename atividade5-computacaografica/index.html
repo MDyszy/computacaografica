@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcial 5 - Computação Gráfica</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <canvas></canvas>
+    <div id="nome-projecao"></div>
+    <input type="file" id="button-file" accept=".txt">
+
+<!-- Popup de ajuda -->
+    <div id="ajuda" class="oculto">
+        <div class="ajuda-painel">
+            <h2>AJUDA</h2>
+<pre class="ajuda-teclas">
+
+Escala:
+Eixo X:   A aumenta   /   Z diminui
+Eixo Y:   S aumenta   /   X diminui
+Eixo Z:   D aumenta   /   C diminui
+
+Rotação:
+F inclina para frente      /   V inclina para trás
+G gira para a esquerda    /   B gira para a direita
+H roda anti-horário       /   N roda horário
+
+Transalação:
+Eixo X:   J aumenta   /   M diminui
+Eixo Y:   K aumenta   /   , diminui
+Eixo Z:   L aumenta   /   . diminui</pre>
+            <small>Pressione F1 para fechar</small>
+        </div>
+    </div>
+
+    <script src="./scripts/script.js"></script>
+</body>
+</html>

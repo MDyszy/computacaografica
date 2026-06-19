@@ -1,0 +1,75 @@
+body{
+    margin: 0;
+    overflow: hidden;
+    background-color: #f3f3f3;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#button-file {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1;
+}
+
+#nome-projecao {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    font-family: monospace;
+    font-size: 16px;
+    color: #000000;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Popup de ajuda (tecla F1) */
+#ajuda {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5); /* escurece o fundo */
+}
+
+#ajuda.oculto {
+    display: none;
+}
+
+.ajuda-painel {
+    background-color: #ffffff;
+    border: 2px solid #222222;
+    border-radius: 10px;
+    overflow: hidden; /* faz a faixa do título respeitar os cantos arredondados */
+    font-family: monospace;
+}
+
+.ajuda-painel h2 {
+    margin: 0;
+    padding: 12px;
+    text-align: center;
+    background-color: #222222;
+    color: #ffffff;
+}
+
+.ajuda-teclas {
+    margin: 0;
+    padding: 20px 24px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.ajuda-painel small {
+    display: block;
+    padding-bottom: 16px;
+    text-align: center;
+    font-style: italic;
+    color: #666666;
+}
