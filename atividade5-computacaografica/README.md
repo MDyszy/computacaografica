@@ -33,7 +33,7 @@ Associar a tecla **P** à troca circular entre as projeções, definindo a **Cav
 | Projeção | Descrição |
 |---|---|
 | Paralela Oblíqua Cabinet | Paralela oblíqua com `l = 0.5` e `α = 63.4°` |
-| Paralela Ortográfica Isométrica | Caso especial β = 90° (`l = 0`), descarta Z |
+| Paralela Ortográfica Isométrica | Projeção isométrica com eixos a 30°, usando cos/sin de π/6 |
 | Perspectiva com um ponto de fuga em Z | Fuga no eixo Z, distância `d = 3` |
 | Perspectiva com dois pontos de fuga, em X e em Z | Fuga nos eixos X e Z, `dx = dz = 3` |
 
@@ -51,12 +51,12 @@ Mob = [ 1,  0,  -0.5·cos(63.4°),  0 ]
       [ 0,  0,   0,                1 ]
 ```
 
-**Ortográfica Isométrica** — caso β = 90° da fórmula oblíqua geral (`l = 1/tan β`), resultando em `l = 0`:
+**Isométrica** — projeção isométrica com os três eixos a 120° entre si, desenhados com ângulos de 30° em relação à horizontal:
 ```
-Mob = [ 1,  0,  0,  0 ]
-      [ 0,  1,  0,  0 ]
-      [ 0,  0,  0,  0 ]
-      [ 0,  0,  0,  1 ]
+MobIsometrica = [ cos(30°),  -cos(30°),  0,  0 ]
+                [ sin(30°),   sin(30°),  1,  0 ]
+                [    0,          0,      0,  0 ]
+                [    0,          0,      0,  1 ]
 ```
 
 **Perspectiva 1 ponto** (fuga em Z, distância `d = 3`):
@@ -117,9 +117,11 @@ Sx Sy Sz   ← escala inicial
 
 ## Fontes
 
-1. **Julio Arakaki — Projeções Geométricas (PUC-SP)** — base teórica para as projeções paralelas oblíquas e ortográfica
-2. **Hugo A. D. do Nascimento — Projeções (UFG)** — base teórica para as matrizes de perspectiva
-3. **LLM (Claude — Anthropic)** — auxílio na nas matrizes de perspectiva de ponto e funcionamento das mesmas
+1. **Julio Arakaki — Projeções Geométricas (PUC-SP)** — base teórica para as projeções paralelas oblíquas (Cavaleira e Cabinet)
+2. **[CompuPhase — Axonometric projections, a technical overview](https://www.compuphase.com/axometr.htm)** — formulação da matriz isométrica com cos(30°)/sin(30°): `x' = (x−z)·cos(30°)`, `y' = y + (x+z)·sin(30°)`, baseada nas normas NEN 2536 e ISO 5456-3
+3. **[Wikipedia — Isometric projection](https://en.wikipedia.org/wiki/Isometric_projection)** — definição formal da projeção isométrica e derivação geométrica dos ângulos de 30°
+4. **Hugo A. D. do Nascimento — Projeções (UFG)** — base teórica para as matrizes de perspectiva
+5. **LLM (Claude — Anthropic)** — auxílio na nas matrizes de perspectiva de ponto e funcionamento das mesmas
 
 ---
 

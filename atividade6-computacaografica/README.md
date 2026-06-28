@@ -1,68 +1,113 @@
-# Atividade 6 — Computação Gráfica
+# Parcial 6 — Computação Gráfica
 
-Projeto em grupo desenvolvido para a disciplina de **Computação Gráfica**, ministrado por Hugo Alexandre Dantas do Nascimento na Universidade Federal de Goiás no semestre 2026/01. 
+> Visualizador de múltiplos objetos 3D em wireframe com suporte a faces, seleção por teclado e múltiplas projeções geométricas, desenvolvido com HTML, CSS e JavaScript puro.
 
-## Proposta
+---
 
-Aplicação web (HTML + Canvas + JavaScript) que carrega objetos 3D a partir de um arquivo `.dat` e os exibe com suporte a cinco tipos de projeção:
+## Sobre o Projeto
 
-- Paralela Oblíqua Cavaleira
-- Paralela Oblíqua Cabinet
-- Paralela Ortográfica Isométrica
-- Perspectiva com um ponto de fuga (eixo Z)
-- Perspectiva com dois pontos de fuga (eixos X e Z)
+Este repositório contém a atividade da **Parcial 6** da disciplina de **Computação Gráfica**, ministrada pelo professor **Hugo Alexandre Dantas do Nascimento** no período **2026/1**, na **Universidade Federal de Goiás — UFG**.
 
-Cada objeto pode ser selecionado individualmente (TAB / SHIFT+TAB) e manipulado de forma independente via teclado, aplicando escala, rotação e translação.
+O projeto é uma evolução da Parcial 5, que já contava com renderização em wireframe com DDA, transformações geométricas via teclado e as cinco projeções geométricas. Esta entrega adiciona suporte a múltiplos objetos 3D com faces coloridas, leitura de um arquivo `.dat` via `fetch` e seleção/manipulação individual de objetos.
 
-## Como executar
+---
 
-O programa usa `fetch` para carregar o arquivo `exemplos-arquivos/figure.dat`. Por restrição de segurança dos browsers, o `fetch` **não funciona quando o `index.html` é aberto diretamente pelo explorador de arquivos** (protocolo `file://`). É necessário servir os arquivos via HTTP. A forma mais simples é usar a extensão **Live Server** do VSCode: clique com o botão direito em `index.html` e selecione *Open with Live Server*.
+## Enunciado
 
-## Como o programa funciona
+1. Incluir na estrutura de dados de cada objeto 3D:
+   - Lista de faces com índices dos vértices (anti-horário), cor RGB em [0,1] e campo `zMedio` (usado no próximo trabalho)
+   - Valores de rotação, escala e translação por objeto
 
-### Carregamento do arquivo
+2. Ler automaticamente no início da execução o arquivo `figure.dat` contendo um ou mais objetos 3D
 
-Ao iniciar, o programa usa `fetch` para carregar o arquivo `exemplos-arquivos/figure.dat`. O texto retornado é passado para a função `lerArquivoFigura`, que lê linha a linha de forma sequencial: primeiro o nome da figura e a área do universo, depois a quantidade de objetos e, para cada um, todos os seus dados.
+3. Suportar múltiplos objetos com:
+   - Lista circular navegável por **TAB** / **SHIFT+TAB**
+   - Todos os objetos visíveis simultaneamente
+   - Objeto selecionado destacado em vermelho
+   - Transformações aplicadas somente ao objeto selecionado
 
-Para montar cada objeto, a função chama `criarObjeto3D` (que cria a estrutura vazia) e em seguida preenche seus campos usando:
+---
 
-- `vertices.push([x, y, z])` — para cada ponto lido
-- `arestas.push([a-1, b-1])` — para cada par de índices (convertido de base 1 para base 0)
-- `adicionarFace(objeto, indices, [r, g, b])` — para cada face, que internamente chama `criarFace` e `calcularZMedioFace`
+## O que foi implementado
 
-Ao final, todos os objetos são armazenados em `listaObjetos[]`.
+### Estrutura de dados
 
-### Loop de renderização
-
-A função `update` roda a cada frame via `requestAnimationFrame`. A cada frame ela:
-
-1. Lê o teclado e aplica escala, rotação e translação **somente ao objeto selecionado** (`atualizaEscala`, `atualizaRotacao`, `atualizaTranslacao`)
-2. Percorre **todos** os objetos da lista e chama a função de projeção ativa para cada um
-3. O objeto selecionado é desenhado em vermelho; os demais, em preto
-
-### Pipeline de transformações
-
-Cada função de projeção (ex: `projCavalera`, `projPersp1`) monta uma única matriz 4×4 combinada:
+Cada objeto armazena:
 
 ```
-M = Mob · T · R · S
+{
+  nome,
+  vertices:   [ [x, y, z], ... ],
+  arestas:    [ [i, j], ... ],
+  faces:      [ { indices, cor: [R, G, B], zMedio }, ... ],
+  rotacao:    [rx, ry, rz],
+  escala:     [sx, sy, sz],
+  translacao: [tx, ty, tz]
+}
 ```
 
-onde `Mob` é a matriz da projeção ativa, `T` é a translação, `R` é a rotação (Rz · Ry · Rx) e `S` é a escala. Antes de multiplicar, os vértices têm o centro geométrico do objeto subtraído, garantindo que escala e rotação ocorram em torno do próprio objeto. O resultado é mapeado para coordenadas de canvas (X somado ao centro da tela, Y invertido) e as arestas são desenhadas pixel a pixel pelo algoritmo DDA.
+### Leitura do arquivo
 
-## Correções realizadas
+O arquivo `figure.dat` é carregado via `fetch` logo na inicialização. O formato inclui:
+- Nome da figura e coordenadas do universo (`Xmin Xmax Ymin Ymax`)
+- Para cada objeto: nome, pontos, arestas, faces (com cor RGB), rotação, escala e translação
 
-### Projeção isométrica — matriz incorreta
+O universo define os limites do sistema de coordenadas. As coordenadas projetadas são mapeadas ao canvas via `fatorX = canvas.width / (Xmax − Xmin)` e `fatorY = canvas.height / (Ymax − Ymin)`.
 
-A matriz isométrica original era uma projeção ortográfica frontal simples (zerando Z), o que não corresponde à projeção isométrica verdadeira. A matriz foi substituída pela derivação correta, que combina uma projeção ortogonal com rotações de Ry(45°) e Rx(−35,264°).
+### Seleção de objetos
 
-Fonte: [Computação Gráfica — Projeções Paralelas, UFLA](https://bruno.dac.ufla.br/aulas/cg/monte-mor/45.htm)
+`indiceSelecionado` controla qual objeto está ativo. **TAB** incrementa e **SHIFT+TAB** decrementa com retorno circular. O objeto selecionado é desenhado em vermelho; os demais em preto. As operações de escala, rotação e translação afetam apenas o objeto selecionado.
 
-### Perspectiva — objetos aparecendo como ponto
+### Projeções
 
-Com os valores originais de distância focal (`d = 3`) e as translações Z dos objetos no arquivo (`z = 100` para o cubo, `z = 20` para a pirâmide), o denominador da divisão homogênea (`w = z/d + 1`) ficava muito alto, comprimindo toda a geometria a um ponto quase invisível na tela.
+| Projeção | Parâmetros |
+|---|---|
+| Paralela Oblíqua Cavaleira | `α = 45°`, `l = 1` |
+| Paralela Oblíqua Cabinet | `α = 63.4°`, `l = 0.5` |
+| Paralela Ortográfica Isométrica | eixos a 30°, cos/sin de π/6 |
+| Perspectiva 1 ponto de fuga em Z | `d = 200` |
+| Perspectiva 2 pontos de fuga em X e Z | `dx = dz = 200` |
 
-A correção envolveu duas etapas:
+---
 
-1. **Aumentar a distância focal** de `d = 3` para `d = 200`, trazendo o plano de projeção para uma escala compatível com o tamanho dos objetos.
-2. **Zerar a translação Z nas funções de perspectiva** — a translação em Z colocava o objeto inteiro a uma profundidade fixa, fazendo o `w` crescer uniformemente e anular o efeito de perspectiva. Com Z-translação zerada nas funções `projPersp1` e `projPersp2`, a variação de profundidade passa a vir exclusivamente da geometria do objeto (escala), tornando o efeito perspectivo visível e proporcional.
+## Como Executar
+
+O programa usa `fetch` para carregar `figure.dat`, o que exige um servidor HTTP local. Abrir o `index.html` diretamente no navegador não funciona.
+
+```bash
+git clone https://github.com/MDyszy/computacaografica
+cd computacaografica/atividade6-computacaografica
+# Abra com Live Server (VS Code) ou qualquer servidor local
+```
+
+### Formato do arquivo `figure.dat`
+
+```
+# Nome da figura
+Xmin Xmax Ymin Ymax
+n                        ← quantidade de objetos
+# Nome do objeto
+p l f                    ← quantidade de pontos, arestas e faces
+x y z                    ← coordenadas de cada vértice (p linhas)
+Pa Pb                    ← índices (base 1) dos extremos de cada aresta (l linhas)
+N IP1...IPN R G B        ← face: qtd vértices, índices (base 1), cor RGB em [0,1] (f linhas)
+theta_x theta_y theta_z  ← rotação inicial (graus)
+Sx Sy Sz                 ← escala inicial
+Tx Ty Tz                 ← translação inicial
+```
+
+---
+
+## Fontes
+
+1. **Julio Arakaki — Projeções Geométricas (PUC-SP)** — base teórica para as projeções paralelas oblíquas (Cavaleira e Cabinet)
+2. **[CompuPhase — Axonometric projections, a technical overview](https://www.compuphase.com/axometr.htm)** — formulação da matriz isométrica com cos(30°)/sin(30°): `x' = (x−z)·cos(30°)`, `y' = y + (x+z)·sin(30°)`, baseada nas normas NEN 2536 e ISO 5456-3
+3. **[Wikipedia — Isometric projection](https://en.wikipedia.org/wiki/Isometric_projection)** — definição formal da projeção isométrica e derivação geométrica dos ângulos de 30°
+4. **Hugo A. D. do Nascimento — Projeções (UFG)** — base teórica para as matrizes de perspectiva
+5. **LLM (Claude — Anthropic)** — auxílio nas matrizes de perspectiva e estrutura de dados
+
+---
+
+## Nota sobre este README
+
+Este arquivo foi **gerado com auxílio de Inteligência Artificial**, especificamente pelo modelo **Claude Sonnet 4.6**.

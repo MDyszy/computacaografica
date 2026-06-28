@@ -84,9 +84,7 @@ function criadorEstrutura3D(arquivo){ // Função para criar a estrutura do obje
     coluna = linhasArq[2 + n + m + 2].split(" ");
     const escala = [parseFloat(coluna[0]), parseFloat(coluna[1]), parseFloat(coluna[2])];
 
-    objeto = [n, m, pontos, linhas, translacao, rotacao, escala];
-
-    return objeto;
+    objeto = [m, pontos, linhas, translacao, rotacao, escala];
 }
 
 const MobCavaleira = [ // Matriz para projeção Cavalera ( ângulo de 45°, l = 1 - Arakaki)
@@ -99,15 +97,16 @@ const MobCavaleira = [ // Matriz para projeção Cavalera ( ângulo de 45°, l =
 const MobCabinet = [ // Matriz para projeção Cabinet ( ângulo de 63,4°, l = 0.5 - Arakaki)
     [1, 0, -0.5 * Math.cos(63.4 * Math.PI / 180), 0],
     [0, 1, -0.5 * Math.sin(63.4 * Math.PI / 180), 0],
-    [0, 0,               0                       , 0],
-    [0, 0,               0                       , 1]
+    [0, 0,               0                      , 0],
+    [0, 0,               0                      , 1]
 ];
 
-const MobOrtografica = [ // Matriz para a projeção Ortográfica ( ângulo de 90º, l = 0 - Arakaki)
-    [1, 0, 0, 0],
-    [0, 1, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 1]
+
+const MobIsometrica = [ // Matriz para a projeção Isométrica (CompuPhase)
+    [ Math.cos(Math.PI / 6), 0, - Math.cos(Math.PI / 6), 0],
+    [-Math.sin(Math.PI / 6), 1, - Math.sin(Math.PI / 6), 0],
+    [   0,                   0,                       0, 0],
+    [   0,                   0,                       0, 1]
 ];
 
 const d = 3;
@@ -198,7 +197,7 @@ function matrizTranslacao(tx, ty, tz){ // Monta a matriz 4x4 de translação
 }
 
 function atualizaEscala(objeto){ // Aplica os incrementos de escala conforme as teclas pressionadas
-    const escala = objeto[6];
+    const escala = objeto[5];
     const passoEscala = 0.01; 
 
     if (keys["a"]) escala[0] += passoEscala; 
@@ -210,7 +209,7 @@ function atualizaEscala(objeto){ // Aplica os incrementos de escala conforme as 
 }
 
 function atualizaRotacao(objeto){ // Aplica os incrementos de rotação conforme as teclas pressionadas
-    const rotacao = objeto[5];
+    const rotacao = objeto[4];
     const passoRotacao = 0.1; 
 
     if (keys["f"]) rotacao[0] += passoRotacao; 
@@ -222,7 +221,7 @@ function atualizaRotacao(objeto){ // Aplica os incrementos de rotação conforme
 }
 
 function atualizaTranslacao(objeto){ // Aplica os incrementos de translação conforme as teclas pressionadas
-    const translacao = objeto[4];
+    const translacao = objeto[3];
     const passoTranslacao = 0.01; 
 
     if (keys["j"]) translacao[0] += passoTranslacao; 
@@ -234,11 +233,11 @@ function atualizaTranslacao(objeto){ // Aplica os incrementos de translação co
 }
 
 function projCavalera(objeto){ // Função para projeção utilizando cavalera
-    const vertices = objeto[2];
-    const arestas = objeto[3];
-    const translacao = objeto[4];
-    const rotacao = objeto[5];
-    const escala = objeto[6];
+    const vertices = objeto[1];
+    const arestas = objeto[2];
+    const translacao = objeto[3];
+    const rotacao = objeto[4];
+    const escala = objeto[5];
 
     // Calcula o centro geométrico do objeto para centralizar na tela
     const todosX = vertices.map(v => v[0]);
@@ -251,13 +250,13 @@ function projCavalera(objeto){ // Função para projeção utilizando cavalera
     const centroCanvasX = canvas.width / 2;
     const centroCanvasY = canvas.height / 2;
 
-    // Combina tudo numa única matriz: M = Mob · Translação · Rotação · Escala
+    // Combina tudo numa única matriz
     const escalaM = matrizEscala(escala[0], escala[1], escala[2]);
     const rotacaoM = matrizRotacao(rotacao[0], rotacao[1], rotacao[2]);
     const translacaoM = matrizTranslacao(translacao[0], translacao[1], translacao[2]);
     const M = multiplicaMatrizes(MobCavaleira, multiplicaMatrizes(translacaoM, multiplicaMatrizes(rotacaoM, escalaM)));
 
-    for (let i = 0; i < objeto[1]; i++){
+    for (let i = 0; i < objeto[0]; i++){
         const p1 = arestas[i][0];
         const p2 = arestas[i][1];
 
@@ -284,11 +283,11 @@ function projCavalera(objeto){ // Função para projeção utilizando cavalera
 }
 
 function projCabinet(objeto){ // Função para projeção utilizando cabinet
-    const vertices = objeto[2];
-    const arestas = objeto[3];
-    const translacao = objeto[4];
-    const rotacao = objeto[5];
-    const escala = objeto[6];
+    const vertices = objeto[1];
+    const arestas = objeto[2];
+    const translacao = objeto[3];
+    const rotacao = objeto[4];
+    const escala = objeto[5];
 
     const todosX = vertices.map(v => v[0]);
     const todosY = vertices.map(v => v[1]);
@@ -305,7 +304,7 @@ function projCabinet(objeto){ // Função para projeção utilizando cabinet
     const translacaoM = matrizTranslacao(translacao[0], translacao[1], translacao[2]);
     const M = multiplicaMatrizes(MobCabinet, multiplicaMatrizes(translacaoM, multiplicaMatrizes(rotacaoM, escalaM)));
 
-    for (let i = 0; i < objeto[1]; i++){
+    for (let i = 0; i < objeto[0]; i++){
         const p1 = arestas[i][0];
         const p2 = arestas[i][1];
 
@@ -330,12 +329,12 @@ function projCabinet(objeto){ // Função para projeção utilizando cabinet
     }
 }
 
-function projOrtografica(objeto){ // Função para projeção ortográfica ortográfica
-    const vertices = objeto[2];
-    const arestas = objeto[3];
-    const translacao = objeto[4];
-    const rotacao = objeto[5];
-    const escala = objeto[6];
+function projIsometrica(objeto){ // Função para projeção isométrica
+    const vertices = objeto[1];
+    const arestas = objeto[2];
+    const translacao = objeto[3];
+    const rotacao = objeto[4];
+    const escala = objeto[5];
 
     const todosX = vertices.map(v => v[0]);
     const todosY = vertices.map(v => v[1]);
@@ -350,9 +349,9 @@ function projOrtografica(objeto){ // Função para projeção ortográfica ortog
     const escalaM = matrizEscala(escala[0], escala[1], escala[2]);
     const rotacaoM = matrizRotacao(rotacao[0], rotacao[1], rotacao[2]);
     const translacaoM = matrizTranslacao(translacao[0], translacao[1], translacao[2]);
-    const M = multiplicaMatrizes(MobOrtografica, multiplicaMatrizes(translacaoM, multiplicaMatrizes(rotacaoM, escalaM)));
+    const M = multiplicaMatrizes(MobIsometrica, multiplicaMatrizes(translacaoM, multiplicaMatrizes(rotacaoM, escalaM)));
 
-    for (let i = 0; i < objeto[1]; i++){
+    for (let i = 0; i < objeto[0]; i++){
         const p1 = arestas[i][0];
         const p2 = arestas[i][1];
 
@@ -378,11 +377,11 @@ function projOrtografica(objeto){ // Função para projeção ortográfica ortog
 }
 
 function projPersp1(objeto){ // Função para perspectiva com 1 ponto de fuga no eixo Z
-    const vertices = objeto[2];
-    const arestas = objeto[3];
-    const translacao = objeto[4];
-    const rotacao = objeto[5];
-    const escala = objeto[6];
+    const vertices = objeto[1];
+    const arestas = objeto[2];
+    const translacao = objeto[3];
+    const rotacao = objeto[4];
+    const escala = objeto[5];
 
     const todosX = vertices.map(v => v[0]);
     const todosY = vertices.map(v => v[1]);
@@ -399,7 +398,7 @@ function projPersp1(objeto){ // Função para perspectiva com 1 ponto de fuga no
     const translacaoM = matrizTranslacao(translacao[0], translacao[1], translacao[2]);
     const M = multiplicaMatrizes(MPersp1, multiplicaMatrizes(translacaoM, multiplicaMatrizes(rotacaoM, escalaM)));
 
-    for (let i = 0; i < objeto[1]; i++){
+    for (let i = 0; i < objeto[0]; i++){
         const p1 = arestas[i][0];
         const p2 = arestas[i][1];
 
@@ -425,11 +424,11 @@ function projPersp1(objeto){ // Função para perspectiva com 1 ponto de fuga no
 }
 
 function projPersp2(objeto){ // Função para perspectiva com 2 pontos de fuga nos eixos X e Z
-    const vertices = objeto[2];
-    const arestas = objeto[3];
-    const translacao = objeto[4];
-    const rotacao = objeto[5];
-    const escala = objeto[6];
+    const vertices = objeto[1];
+    const arestas = objeto[2];
+    const translacao = objeto[3];
+    const rotacao = objeto[4];
+    const escala = objeto[5];
 
     const todosX = vertices.map(v => v[0]);
     const todosY = vertices.map(v => v[1]);
@@ -446,7 +445,7 @@ function projPersp2(objeto){ // Função para perspectiva com 2 pontos de fuga n
     const translacaoM = matrizTranslacao(translacao[0], translacao[1], translacao[2]);
     const M = multiplicaMatrizes(MPersp2, multiplicaMatrizes(translacaoM, multiplicaMatrizes(rotacaoM, escalaM)));
 
-    for (let i = 0; i < objeto[1]; i++){
+    for (let i = 0; i < objeto[0]; i++){
         const p1 = arestas[i][0];
         const p2 = arestas[i][1];
 
@@ -528,7 +527,7 @@ function update(){ // Função de atualização
             projCabinet(objeto);
         } 
         else if (indiceProj === 2) {
-            projOrtografica(objeto);
+            projIsometrica(objeto);
         } 
         else if (indiceProj === 3) {
             projPersp1(objeto);
