@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcial 6 - Computação Gráfica</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <canvas></canvas>
+    <div id="nome-projecao"></div>
+
+<!-- Popup de ajuda -->
+    <div id="ajuda" class="oculto">
+        <div class="ajuda-painel">
+            <h2>AJUDA</h2>
+<pre class="ajuda-teclas">
+Geral:
+P          Alterna a projeção ativa (5 tipos disponíveis)
+ESC        Encerra a aplicação
+F1         Abre / fecha esta ajuda
+
+Seleção de objetos:
+TAB        Avança para o próximo objeto
+SHIFT+TAB  Volta para o objeto anterior
+           (objeto selecionado aparece em vermelho)
+
+Escala (aplicada ao objeto selecionado):
+Eixo X:   A aumenta   /   Z diminui
+Eixo Y:   S aumenta   /   X diminui
+Eixo Z:   D aumenta   /   C diminui
+
+Rotação (aplicada ao objeto selecionado):
+Eixo X:   F aumenta   /   V diminui
+Eixo Y:   G aumenta   /   B diminui
+Eixo Z:   H aumenta   /   N diminui
+
+Translação (aplicada ao objeto selecionado):
+Eixo X:   J aumenta   /   M diminui
+Eixo Y:   K aumenta   /   , diminui
+Eixo Z:   L aumenta   /   . diminui</pre>
+            <small>Pressione F1 para fechar</small>
+        </div>
+    </div>
+
+    <script src="./scripts/script.js"></script>
+</body>
+</html>
