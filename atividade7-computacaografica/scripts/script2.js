@@ -45,8 +45,13 @@ window.addEventListener("keyup", (e) => {
     keys[e.key.toLowerCase()] = false;
 });
 
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
 // Tarefa 02 
-function putPixel(x, y, color) { 
+function putPixel(x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, 2, 2);
 }
@@ -96,11 +101,11 @@ function scanLineFill(positionsVertice, insideColor) {
         // Passo 2 - Interseção com a linha de varredura
         // Inserção com linha de varredura
         for (let k = 0; k < tabela.length; k++) {
-            if (yVarredura < tabela[k].ymin || yVarredura >= tabela[k].ymax){  // Eliminar lados do polígono que a linha não intercepta 
+            if (yVarredura < tabela[k].ymin || yVarredura >= tabela[k].ymax) {  // Eliminar lados do polígono que a linha não intercepta 
                 continue;                                                      // Considerar apenas uma inserção se o vértice tem ymax para um lado ymin para outro
             }
-            if (tabela[k].ymin === tabela[k].ymax){ // Tratamento para linhas horizontais
-                continue; 
+            if (tabela[k].ymin === tabela[k].ymax) { // Tratamento para linhas horizontais
+                continue;
             }
 
             x = tabela[k].mInv * (yVarredura - tabela[k].ymin) + tabela[k].xymin;
@@ -131,10 +136,10 @@ function scanLineFill(positionsVertice, insideColor) {
 
 // Tarefa 04 - Transformações geométricas
 function multiplicaMatrizes(a, b) {
-    const r = [[0,0,0,0],
-               [0,0,0,0],
-               [0,0,0,0],
-               [0,0,0,0]];
+    const r = [[0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]];
 
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 4; j++) {
@@ -148,10 +153,10 @@ function multiplicaMatrizes(a, b) {
 
 function matrizEscala(sx, sy, sz) {
     return [
-        [sx,  0,  0, 0],
-        [ 0, sy,  0, 0],
-        [ 0,  0, sz, 0],
-        [ 0,  0,  0, 1]
+        [sx, 0, 0, 0],
+        [0, sy, 0, 0],
+        [0, 0, sz, 0],
+        [0, 0, 0, 1]
     ];
 }
 
@@ -160,34 +165,34 @@ function matrizTranslacao(tx, ty, tz) {
         [1, 0, 0, tx],
         [0, 1, 0, ty],
         [0, 0, 1, tz],
-        [0, 0, 0,  1]
+        [0, 0, 0, 1]
     ];
 }
 
 function matrizRotacaoX(anguloRad) {
     return [
-        [1,                    0,                     0, 0],
-        [0,  Math.cos(anguloRad), -Math.sin(anguloRad), 0],
-        [0,  Math.sin(anguloRad),  Math.cos(anguloRad), 0],
-        [0,                    0,                     0, 1]
+        [1, 0, 0, 0],
+        [0, Math.cos(anguloRad), -Math.sin(anguloRad), 0],
+        [0, Math.sin(anguloRad), Math.cos(anguloRad), 0],
+        [0, 0, 0, 1]
     ];
 }
 
 function matrizRotacaoY(anguloRad) {
     return [
-        [ Math.cos(anguloRad), 0, Math.sin(anguloRad), 0],
-        [                   0, 1,                    0, 0],
+        [Math.cos(anguloRad), 0, Math.sin(anguloRad), 0],
+        [0, 1, 0, 0],
         [-Math.sin(anguloRad), 0, Math.cos(anguloRad), 0],
-        [                   0, 0,                    0, 1]
+        [0, 0, 0, 1]
     ];
 }
 
 function matrizRotacaoZ(anguloRad) {
     return [
         [Math.cos(anguloRad), -Math.sin(anguloRad), 0, 0],
-        [Math.sin(anguloRad),  Math.cos(anguloRad), 0, 0],
-        [                  0,                     0, 1, 0],
-        [                  0,                     0, 0, 1]
+        [Math.sin(anguloRad), Math.cos(anguloRad), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
     ];
 }
 
@@ -201,34 +206,34 @@ function matrizRotacao(rx, ry, rz) {
 function atualizaEscala(objeto) {
     const escala = objeto.escala;
     const passo = 0.1;
-    if (keys["a"]){ escala[0] += passo; }
-    if (keys["z"]){ escala[0] -= passo; }
-    if (keys["s"]){ escala[1] += passo; }
-    if (keys["x"]){ escala[1] -= passo; }
-    if (keys["d"]){ escala[2] += passo; }
-    if (keys["c"]){ escala[2] -= passo; }
+    if (keys["a"]) { escala[0] += passo; }
+    if (keys["z"]) { escala[0] -= passo; }
+    if (keys["s"]) { escala[1] += passo; }
+    if (keys["x"]) { escala[1] -= passo; }
+    if (keys["d"]) { escala[2] += passo; }
+    if (keys["c"]) { escala[2] -= passo; }
 }
 
 function atualizaRotacao(objeto) {
     const rotacao = objeto.rotacao;
     const passo = 1;
-    if (keys["f"]){ rotacao[0] += passo; }
-    if (keys["v"]){ rotacao[0] -= passo; }
-    if (keys["g"]){ rotacao[1] += passo; }
-    if (keys["b"]){ rotacao[1] -= passo; }
-    if (keys["h"]){ rotacao[2] += passo; }
-    if (keys["n"]){ rotacao[2] -= passo; }
+    if (keys["f"]) { rotacao[0] += passo; }
+    if (keys["v"]) { rotacao[0] -= passo; }
+    if (keys["g"]) { rotacao[1] += passo; }
+    if (keys["b"]) { rotacao[1] -= passo; }
+    if (keys["h"]) { rotacao[2] += passo; }
+    if (keys["n"]) { rotacao[2] -= passo; }
 }
 
 function atualizaTranslacao(objeto) {
     const translacao = objeto.translacao;
-    const passo = 0.1;
-    if (keys["j"]){ translacao[0] += passo; }
-    if (keys["m"]){ translacao[0] -= passo; }
-    if (keys["k"]){ translacao[1] += passo; }
-    if (keys[","]){ translacao[1] -= passo; }
-    if (keys["l"]){ translacao[2] += passo; }
-    if (keys["."]){ translacao[2] -= passo; }
+    const passo = 0.8;
+    if (keys["j"]) { translacao[0] += passo; }
+    if (keys["m"]) { translacao[0] -= passo; }
+    if (keys["k"]) { translacao[1] += passo; }
+    if (keys[","]) { translacao[1] -= passo; }
+    if (keys["l"]) { translacao[2] += passo; }
+    if (keys["."]) { translacao[2] -= passo; }
 }
 
 // Tarefa 05 - Projeções
@@ -244,47 +249,63 @@ let indiceProj = 0;
 const MobCavaleira = [ // Arakaki
     [1, 0, -1 * Math.cos(Math.PI / 4), 0],
     [0, 1, -1 * Math.sin(Math.PI / 4), 0],
-    [0, 0,                           0, 0],
-    [0, 0,                           0, 1]
+    [0, 0, 0, 0],
+    [0, 0, 0, 1]
 ];
 
 const MobCabinet = [ // Arakaki
     [1, 0, -0.5 * Math.cos(63.4 * Math.PI / 180), 0],
     [0, 1, -0.5 * Math.sin(63.4 * Math.PI / 180), 0],
-    [0, 0,                                      0, 0],
-    [0, 0,                                      0, 1]
+    [0, 0, 0, 0],
+    [0, 0, 0, 1]
 ];
 
 const MobIsometrica = [ // CompuPhase
-    [ Math.cos(Math.PI / 6), 0, -Math.cos(Math.PI / 6), 0],
+    [Math.cos(Math.PI / 6), 0, -Math.cos(Math.PI / 6), 0],
     [-Math.sin(Math.PI / 6), 1, -Math.sin(Math.PI / 6), 0],
-    [                     0, 0,                       0, 0],
-    [                     0, 0,                       0, 1]
+    [0, 0, 0, 0],
+    [0, 0, 0, 1]
 ];
 
 const d = 200;
 const MPersp1 = [ // Matriz de perspectiva para ponto de fuga em Z
-    [1, 0,   0, 0],
-    [0, 1,   0, 0],
-    [0, 0,   0, 0],
-    [0, 0, 1/d, 1]
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, -1 / d, 1]
 ];
 
 const dx = 200, dz = 200;
 const MPersp2 = [ // Matriz de perspectiva para ponto de fuga em X e em Z 
-    [    1, 0,    0, 0],
-    [    0, 1,    0, 0],
-    [    0, 0,    1, 0],
-    [1/dx, 0, 1/dz, 1]
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [1 / dx, 0, -1 / dz, 1]
 ];
 
 const configProjecoes = [
-    { Mob: MobCavaleira,  perspectiva: false },
-    { Mob: MobCabinet,    perspectiva: false },
+    { Mob: MobCavaleira, perspectiva: false },
+    { Mob: MobCabinet, perspectiva: false },
     { Mob: MobIsometrica, perspectiva: false },
-    { Mob: MPersp1,       perspectiva: true  },
-    { Mob: MPersp2,       perspectiva: true  },
+    { Mob: MPersp1, perspectiva: true },
+    { Mob: MPersp2, perspectiva: true },
 ];
+
+function calculaViewport() {
+    const centroCanvasX = canvas.width / 2;
+    const centroCanvasY = canvas.height / 2;
+    const fatorX = canvas.width / (universo[1] - universo[0]);
+    const fatorY = canvas.height / (universo[3] - universo[2]);
+    const fator = Math.min(fatorX, fatorY);
+
+    return { centroCanvasX, centroCanvasY, fator };
+}
+
+function dividePerspectiva(valor, w) {
+    const EPSILON = 0.0001;
+    const divisor = Math.abs(w) < EPSILON ? (w < 0 ? -EPSILON : EPSILON) : w;
+    return valor / divisor;
+}
 
 function projetarObjeto(objeto, Mob, perspectiva, cor) {
     const { vertices, arestas, escala, rotacao, translacao } = objeto;
@@ -306,12 +327,8 @@ function projetarObjeto(objeto, Mob, perspectiva, cor) {
             )
         )
     );
+    const { centroCanvasX, centroCanvasY, fator } = calculaViewport();
 
-    const centroCanvasX = canvas.width  / 2;
-    const centroCanvasY = canvas.height / 2;
-    const fatorX = canvas.width  / (universo[1] - universo[0]);
-    const fatorY = canvas.height / (universo[3] - universo[2]);
-    const fator = Math.min(fatorX, fatorY);
 
     for (let i = 0; i < arestas.length; i++) {
         const p1 = arestas[i][0];
@@ -331,10 +348,10 @@ function projetarObjeto(objeto, Mob, perspectiva, cor) {
 
         let x1, y1, x2, y2;
         if (perspectiva) {
-            x1 = centroCanvasX + (res1[0] / res1[3]) * fator;
-            y1 = centroCanvasY - (res1[1] / res1[3]) * fator;
-            x2 = centroCanvasX + (res2[0] / res2[3]) * fator;
-            y2 = centroCanvasY - (res2[1] / res2[3]) * fator;
+            x1 = centroCanvasX + dividePerspectiva(res1[0], res1[3]) * fator;
+            y1 = centroCanvasY - dividePerspectiva(res1[1], res1[3]) * fator;
+            x2 = centroCanvasX + dividePerspectiva(res2[0], res2[3]) * fator;
+            y2 = centroCanvasY - dividePerspectiva(res2[1], res2[3]) * fator;
         } else {
             x1 = centroCanvasX + res1[0] * fator;
             y1 = centroCanvasY - res1[1] * fator;
@@ -347,14 +364,11 @@ function projetarObjeto(objeto, Mob, perspectiva, cor) {
 }
 
 function desenharEixos(Mob, perspectiva) {
-    const COR_EIXOS   = "#c0c0c0";
-    const TRACO       = [8, 6];
+    const COR_EIXOS = "#c0c0c0";
+    const TRACO = [8, 6];
     const COMPRIMENTO = 1.5;
 
-    const centroCanvasX = canvas.width  / 2;
-    const centroCanvasY = canvas.height / 2;
-    const fatorX = canvas.width  / (universo[1] - universo[0]);
-    const fatorY = canvas.height / (universo[3] - universo[2]);
+    const { centroCanvasX, centroCanvasY, fator } = calculaViewport();
 
     const Mgeo = [
         [1, 0, 0, 0],
@@ -365,7 +379,7 @@ function desenharEixos(Mob, perspectiva) {
     const Mproj = multiplicaMatrizes(Mob, Mgeo);
 
     function projetarPonto(px, py, pz) {
-        const v   = [px, py, pz, 1];
+        const v = [px, py, pz, 1];
         const res = [0, 0, 0, 0];
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
@@ -374,11 +388,15 @@ function desenharEixos(Mob, perspectiva) {
         }
 
         if (perspectiva) {
-            return { x: centroCanvasX + (res[0] / res[3]) * fatorX,
-                     y: centroCanvasY - (res[1] / res[3]) * fatorY };
+            return {
+                x: centroCanvasX + dividePerspectiva(res[0], res[3]) * fator,
+                y: centroCanvasY - dividePerspectiva(res[1], res[3]) * fator
+            };
         } else {
-            return { x: centroCanvasX + res[0] * fatorX,
-                     y: centroCanvasY - res[1] * fatorY };
+            return {
+                x: centroCanvasX + res[0] * fator,
+                y: centroCanvasY - res[1] * fator
+            };
         }
     }
 
@@ -389,7 +407,7 @@ function desenharEixos(Mob, perspectiva) {
         ctx.beginPath();
         ctx.setLineDash(TRACO);
         ctx.strokeStyle = COR_EIXOS;
-        ctx.lineWidth   = 1;
+        ctx.lineWidth = 1;
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
         ctx.stroke();
@@ -397,9 +415,9 @@ function desenharEixos(Mob, perspectiva) {
     }
 
     const L = COMPRIMENTO;
-    segmentoTracejado(-L, 0, 0,  L, 0, 0);
-    segmentoTracejado( 0,-L, 0,  0, L, 0);
-    segmentoTracejado( 0, 0,-L,  0, 0, L);
+    segmentoTracejado(-L, 0, 0, L, 0, 0);
+    segmentoTracejado(0, -L, 0, 0, L, 0);
+    segmentoTracejado(0, 0, -L, 0, 0, L);
 }
 
 // Tarefa 06 - Múltiplos objetos
@@ -419,7 +437,7 @@ function lerArquivoFigura(texto) {
 
     coluna = linhasArq[1].split(" ");
     universo = [parseFloat(coluna[0]), parseFloat(coluna[1]),
-                parseFloat(coluna[2]), parseFloat(coluna[3])];
+    parseFloat(coluna[2]), parseFloat(coluna[3])];
     const qtdObjetos = parseInt(linhasArq[2]);
 
     const objeto = [];
@@ -453,22 +471,24 @@ function lerArquivoFigura(texto) {
             faces[j] = {
                 indices,
                 cor: [parseFloat(coluna[coluna.length - 3]),
-                      parseFloat(coluna[coluna.length - 2]),
-                      parseFloat(coluna[coluna.length - 1])],
+                parseFloat(coluna[coluna.length - 2]),
+                parseFloat(coluna[coluna.length - 1])],
                 zMedio: 0
             };
         }
 
         const base = objeto[i] + 2 + nPontos + nLinhas + nFaces;
         coluna = linhasArq[base].split(" ");
-        const rotacao    = [parseFloat(coluna[0]), parseFloat(coluna[1]), parseFloat(coluna[2])];
+        const rotacao = [parseFloat(coluna[0]), parseFloat(coluna[1]), parseFloat(coluna[2])];
         coluna = linhasArq[base + 1].split(" ");
-        const escala     = [parseFloat(coluna[0]), parseFloat(coluna[1]), parseFloat(coluna[2])];
+        const escala = [parseFloat(coluna[0]), parseFloat(coluna[1]), parseFloat(coluna[2])];
         coluna = linhasArq[base + 2].split(" ");
         const translacao = [parseFloat(coluna[0]), parseFloat(coluna[1]), parseFloat(coluna[2])];
 
-        resultado[i] = { nome: nomeObj, vertices: pontos, arestas: linhasObj,
-                         faces, rotacao, escala, translacao };
+        resultado[i] = {
+            nome: nomeObj, vertices: pontos, arestas: linhasObj,
+            faces, rotacao, escala, translacao
+        };
 
         objeto[i + 1] = objeto[i] + 5 + nPontos + nLinhas + nFaces;
     }
@@ -479,9 +499,9 @@ function lerArquivoFigura(texto) {
 // Tarefa 07 - Pintura das faces
 function produtoVetorial(v1, v2) {
     return [
-        v1[1]*v2[2] - v1[2]*v2[1],
-        v1[2]*v2[0] - v1[0]*v2[2],
-        v1[0]*v2[1] - v1[1]*v2[0]
+        v1[1] * v2[2] - v1[2] * v2[1],
+        v1[2] * v2[0] - v1[0] * v2[2],
+        v1[0] * v2[1] - v1[1] * v2[0]
     ];
 }
 
@@ -504,10 +524,7 @@ function atualizaFaces(objeto, Mob, perspectiva) {
     );
     const Mproj = multiplicaMatrizes(Mob, Mgeo);
 
-    const centroCanvasX = canvas.width  / 2;
-    const centroCanvasY = canvas.height / 2;
-    const fatorX = canvas.width  / (universo[1] - universo[0]);
-    const fatorY = canvas.height / (universo[3] - universo[2]);
+    const { centroCanvasX, centroCanvasY, fator } = calculaViewport();
 
     const vert3d = [];
     const vert2d = [];
@@ -530,18 +547,22 @@ function atualizaFaces(objeto, Mob, perspectiva) {
         }
 
         if (perspectiva) {
-            vert2d[j] = { x: centroCanvasX + (r2d[0] / r2d[3]) * fatorX,
-                          y: centroCanvasY - (r2d[1] / r2d[3]) * fatorY };
+            vert2d[j] = {
+                x: centroCanvasX + dividePerspectiva(r2d[0], r2d[3]) * fator,
+                y: centroCanvasY - dividePerspectiva(r2d[1], r2d[3]) * fator
+            };
         } else {
-            vert2d[j] = { x: centroCanvasX + r2d[0] * fatorX,
-                          y: centroCanvasY - r2d[1] * fatorY };
+            vert2d[j] = {
+                x: centroCanvasX + r2d[0] * fator,
+                y: centroCanvasY - r2d[1] * fator
+            };
         }
     }
 
     const facesVisiveis = [];
     for (let j = 0; j < faces.length; j++) {
         const face = faces[j];
-        const idx  = face.indices;
+        const idx = face.indices;
 
         const p0_2d = vert2d[idx[0]];
         const p1_2d = vert2d[idx[1]];
@@ -553,7 +574,7 @@ function atualizaFaces(objeto, Mob, perspectiva) {
         const v2y = p2_2d.y - p0_2d.y;
 
         const produtoZ = (v1x * v2y) - (v1y * v2x);
-        face.visivel = produtoZ <= 0;
+        face.visivel = perspectiva ? true : produtoZ <= 0;
 
         let somaZ = 0;
         for (let k = 0; k < idx.length; k++) somaZ += vert3d[idx[k]][2];
@@ -586,7 +607,7 @@ function update() {
             desenharEixos(Mob, perspectiva);
         }
 
-        const todasFaces = [];
+        const objetosParaDesenho = [];
         for (let i = 0; i < listaObjetos.length; i++) {
             const facesVisiveis = atualizaFaces(listaObjetos[i], Mob, perspectiva);
 
@@ -594,25 +615,38 @@ function update() {
 
             for (let j = 0; j < facesVisiveis.length; j++) {
                 facesVisiveis[j].corContorno = corContorno;
-                todasFaces.push(facesVisiveis[j]);
             }
+
+            const zMedioObjeto = facesVisiveis.length > 0
+                ? facesVisiveis.reduce((soma, face) => soma + face.zMedio, 0) / facesVisiveis.length
+                : 0;
+
+            objetosParaDesenho.push({
+                zMedioObjeto,
+                facesVisiveis
+            });
         }
 
-        todasFaces.sort((a, b) => b.zMedio - a.zMedio);
+        objetosParaDesenho.sort((a, b) => a.zMedioObjeto - b.zMedioObjeto);
 
-        for (let i = 0; i < todasFaces.length; i++) {
-            const face = todasFaces[i];
-            const r  = Math.round(face.cor[0] * 255);
-            const g  = Math.round(face.cor[1] * 255);
-            const bC = Math.round(face.cor[2] * 255);
+        for (let i = 0; i < objetosParaDesenho.length; i++) {
+            const facesVisiveis = objetosParaDesenho[i].facesVisiveis;
+            facesVisiveis.sort((a, b) => a.zMedio - b.zMedio);
 
-            scanLineFill(face.pontos2D, `rgb(${r}, ${g}, ${bC})`);
+            for (let j = 0; j < facesVisiveis.length; j++) {
+                const face = facesVisiveis[j];
+                const r = Math.round(face.cor[0] * 255);
+                const g = Math.round(face.cor[1] * 255);
+                const bC = Math.round(face.cor[2] * 255);
 
-            for (let j = 0; j < face.pontos2D.length; j++) {
-                const pAtual = face.pontos2D[j];
-                const pProximo = face.pontos2D[(j + 1) % face.pontos2D.length];
+                scanLineFill(face.pontos2D, `rgb(${r}, ${g}, ${bC})`);
 
-                linhaDDA(pAtual.x, pAtual.y, pProximo.x, pProximo.y, face.corContorno);
+                for (let k = 0; k < face.pontos2D.length; k++) {
+                    const pAtual = face.pontos2D[k];
+                    const pProximo = face.pontos2D[(k + 1) % face.pontos2D.length];
+
+                    linhaDDA(pAtual.x, pAtual.y, pProximo.x, pProximo.y, face.corContorno);
+                }
             }
         }
 
