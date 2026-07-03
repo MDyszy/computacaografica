@@ -8,6 +8,7 @@ canvas.height = window.innerHeight;
 keys = {};
 divAjuda = document.querySelector("#ajuda");
 divNomeProjecao = document.querySelector("#nome-projecao");
+divIndicadorZoom = document.querySelector("#indicador-zoom");
 
 function closeWindow() {
     alert("Aplicação encerrada!");
@@ -686,6 +687,7 @@ function update() {
     }
 
     divNomeProjecao.textContent = projecoes[indiceProj];
+    divIndicadorZoom.textContent = `Zoom: ${Math.round(ZOOM * 100)}%`;
 
     requestAnimationFrame(update);
 }
