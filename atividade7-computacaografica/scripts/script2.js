@@ -247,22 +247,22 @@ const projecoes = [
 let indiceProj = 0;
 
 const MobCavaleira = [ // Arakaki
-    [1, 0, -1 * Math.cos(Math.PI / 4), 0],
-    [0, 1, -1 * Math.sin(Math.PI / 4), 0],
+    [1, 0, 1 * Math.cos(Math.PI / 4), 0],
+    [0, 1, 1 * Math.sin(Math.PI / 4), 0],
     [0, 0, 0, 0],
     [0, 0, 0, 1]
 ];
 
 const MobCabinet = [ // Arakaki
-    [1, 0, -0.5 * Math.cos(63.4 * Math.PI / 180), 0],
-    [0, 1, -0.5 * Math.sin(63.4 * Math.PI / 180), 0],
+    [1, 0, 0.5 * Math.cos(63.4 * Math.PI / 180), 0],
+    [0, 1, 0.5 * Math.sin(63.4 * Math.PI / 180), 0],
     [0, 0, 0, 0],
     [0, 0, 0, 1]
 ];
 
 const MobIsometrica = [ // CompuPhase
     [Math.cos(Math.PI / 6), 0, -Math.cos(Math.PI / 6), 0],
-    [-Math.sin(Math.PI / 6), 1, -Math.sin(Math.PI / 6), 0],
+    [Math.sin(Math.PI / 6), 1, Math.sin(Math.PI / 6), 0],
     [0, 0, 0, 0],
     [0, 0, 0, 1]
 ];
@@ -272,7 +272,7 @@ const MPersp1 = [ // Matriz de perspectiva para ponto de fuga em Z
     [1, 0, 0, 0],
     [0, 1, 0, 0],
     [0, 0, 0, 0],
-    [0, 0, -1 / d, 1]
+    [0, 0, 1 / d, 1]
 ];
 
 const dx = 200, dz = 200;
@@ -280,7 +280,7 @@ const MPersp2 = [ // Matriz de perspectiva para ponto de fuga em X e em Z
     [1, 0, 0, 0],
     [0, 1, 0, 0],
     [0, 0, 1, 0],
-    [1 / dx, 0, -1 / dz, 1]
+    [1 / dx, 0, 1 / dz, 1]
 ];
 
 const configProjecoes = [
@@ -291,12 +291,14 @@ const configProjecoes = [
     { Mob: MPersp2, perspectiva: true },
 ];
 
+const ZOOM = 0.5 // 50% do tamanho do universo
+
 function calculaViewport() {
     const centroCanvasX = canvas.width / 2;
     const centroCanvasY = canvas.height / 2;
     const fatorX = canvas.width / (universo[1] - universo[0]);
     const fatorY = canvas.height / (universo[3] - universo[2]);
-    const fator = Math.min(fatorX, fatorY);
+    const fator = Math.min(fatorX, fatorY) * ZOOM; // Multiplica por ZOOM para reduzir o tamanho
 
     return { centroCanvasX, centroCanvasY, fator };
 }
@@ -366,7 +368,7 @@ function projetarObjeto(objeto, Mob, perspectiva, cor) {
 function desenharEixos(Mob, perspectiva) {
     const COR_EIXOS = "#c0c0c0";
     const TRACO = [8, 6];
-    const COMPRIMENTO = 1.5;
+    const COMPRIMENTO = 500;
 
     const { centroCanvasX, centroCanvasY, fator } = calculaViewport();
 
@@ -378,7 +380,7 @@ function desenharEixos(Mob, perspectiva) {
     ];
     const Mproj = multiplicaMatrizes(Mob, Mgeo);
 
-    function projetarPonto(px, py, pz) {
+    function transformaPonto(px, py, pz) {
         const v = [px, py, pz, 1];
         const res = [0, 0, 0, 0];
         for (let i = 0; i < 4; i++) {
@@ -386,23 +388,43 @@ function desenharEixos(Mob, perspectiva) {
                 res[i] += Mproj[i][j] * v[j];
             }
         }
+        return res;
+    }
 
+    function paraTela(res) {
         if (perspectiva) {
             return {
                 x: centroCanvasX + dividePerspectiva(res[0], res[3]) * fator,
                 y: centroCanvasY - dividePerspectiva(res[1], res[3]) * fator
             };
-        } else {
-            return {
-                x: centroCanvasX + res[0] * fator,
-                y: centroCanvasY - res[1] * fator
-            };
         }
+        return {
+            x: centroCanvasX + res[0] * fator,
+            y: centroCanvasY - res[1] * fator
+        };
     }
 
     function segmentoTracejado(x0, y0, z0, x1, y1, z1) {
-        const a = projetarPonto(x0, y0, z0);
-        const b = projetarPonto(x1, y1, z1);
+        let ra = transformaPonto(x0, y0, z0);
+        let rb = transformaPonto(x1, y1, z1);
+
+        if (perspectiva) {
+            const EPS = 0.01;
+            const wa = ra[3], wb = rb[3];
+
+            if (wa < EPS && wb < EPS) return; // segmento todo atrás do observador
+
+            if (wa < EPS) {          // recorta a ponta A no plano w = EPS
+                const t = (EPS - wa) / (wb - wa);
+                ra = ra.map((v, i) => v + t * (rb[i] - v));
+            } else if (wb < EPS) {   // recorta a ponta B
+                const t = (EPS - wb) / (wa - wb);
+                rb = rb.map((v, i) => v + t * (ra[i] - v));
+            }
+        }
+
+        const a = paraTela(ra);
+        const b = paraTela(rb);
 
         ctx.beginPath();
         ctx.setLineDash(TRACO);
@@ -574,7 +596,7 @@ function atualizaFaces(objeto, Mob, perspectiva) {
         const v2y = p2_2d.y - p0_2d.y;
 
         const produtoZ = (v1x * v2y) - (v1y * v2x);
-        face.visivel = perspectiva ? true : produtoZ <= 0;
+        face.visivel = produtoZ >= 0;
 
         let somaZ = 0;
         for (let k = 0; k < idx.length; k++) somaZ += vert3d[idx[k]][2];
@@ -627,11 +649,11 @@ function update() {
             });
         }
 
-        objetosParaDesenho.sort((a, b) => a.zMedioObjeto - b.zMedioObjeto);
+        objetosParaDesenho.sort((a, b) => b.zMedioObjeto - a.zMedioObjeto);
 
         for (let i = 0; i < objetosParaDesenho.length; i++) {
             const facesVisiveis = objetosParaDesenho[i].facesVisiveis;
-            facesVisiveis.sort((a, b) => a.zMedio - b.zMedio);
+            facesVisiveis.sort((a, b) => b.zMedio - a.zMedio);
 
             for (let j = 0; j < facesVisiveis.length; j++) {
                 const face = facesVisiveis[j];
