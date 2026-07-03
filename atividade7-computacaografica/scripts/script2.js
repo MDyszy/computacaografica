@@ -236,6 +236,14 @@ function atualizaTranslacao(objeto) {
     if (keys["."]) { translacao[2] -= passo; }
 }
 
+function atualizaZoom() {
+    const passo = 1.02; // 2% por frame
+    if (keys["+"] || keys["="]) { ZOOM *= passo; }
+    if (keys["-"]) { ZOOM /= passo; }
+    if (keys["0"]) { ZOOM = 0.5; } // restaura o zoom inicial
+    ZOOM = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, ZOOM));
+}
+
 // Tarefa 05 - Projeções
 const projecoes = [
     "Paralela Obliqua Cavaleira",
@@ -291,14 +299,16 @@ const configProjecoes = [
     { Mob: MPersp2, perspectiva: true },
 ];
 
-const ZOOM = 0.5 // 50% do tamanho do universo
+let ZOOM = 0.5;
+const ZOOM_MIN = 0.1;
+const ZOOM_MAX = 2;
 
 function calculaViewport() {
     const centroCanvasX = canvas.width / 2;
     const centroCanvasY = canvas.height / 2;
     const fatorX = canvas.width / (universo[1] - universo[0]);
     const fatorY = canvas.height / (universo[3] - universo[2]);
-    const fator = Math.min(fatorX, fatorY) * ZOOM; // Multiplica por ZOOM para reduzir o tamanho
+    const fator = Math.min(fatorX, fatorY) * ZOOM;
 
     return { centroCanvasX, centroCanvasY, fator };
 }
@@ -368,7 +378,7 @@ function projetarObjeto(objeto, Mob, perspectiva, cor) {
 function desenharEixos(Mob, perspectiva) {
     const COR_EIXOS = "#c0c0c0";
     const TRACO = [8, 6];
-    const COMPRIMENTO = 500;
+    const COMPRIMENTO = 2000;
 
     const { centroCanvasX, centroCanvasY, fator } = calculaViewport();
 
@@ -622,6 +632,7 @@ function update() {
         atualizaEscala(objSelecionado);
         atualizaRotacao(objSelecionado);
         atualizaTranslacao(objSelecionado);
+        atualizaZoom();
 
         const { Mob, perspectiva } = configProjecoes[indiceProj];
 
