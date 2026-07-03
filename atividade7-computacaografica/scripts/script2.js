@@ -262,9 +262,9 @@ const MobCavaleira = [ // Arakaki
     [0, 0, 0, 1]
 ];
 
-const MobCabinet = [ // Arakaki
-    [1, 0, 0.5 * Math.cos(63.4 * Math.PI / 180), 0],
-    [0, 1, 0.5 * Math.sin(63.4 * Math.PI / 180), 0],
+const MobCabinet = [ // Arakaki — projetores a 63.4° com o plano => L = 1/tan(63.4°) = 0.5; eixo Z desenhado a 45°
+    [1, 0, 0.5 * Math.cos(Math.PI / 4), 0],
+    [0, 1, 0.5 * Math.sin(Math.PI / 4), 0],
     [0, 0, 0, 0],
     [0, 0, 0, 1]
 ];

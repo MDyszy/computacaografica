@@ -62,8 +62,8 @@ O universo define os limites do sistema de coordenadas. As coordenadas projetada
 
 | Projeção | Parâmetros |
 |---|---|
-| Paralela Oblíqua Cavaleira | `α = 45°`, `l = 1` |
-| Paralela Oblíqua Cabinet | `α = 63.4°`, `l = 0.5` |
+| Paralela Oblíqua Cavaleira | `α = 45°`, `l = 1` (projetores a 45° do plano) |
+| Paralela Oblíqua Cabinet | `α = 45°`, `l = 0.5` (projetores a 63.4° do plano ⇒ `l = 1/tan(63.4°)`) |
 | Paralela Ortográfica Isométrica | eixos a 30°, cos/sin de π/6 |
 | Perspectiva 1 ponto de fuga em Z | `d = 200` |
 | Perspectiva 2 pontos de fuga em X e Z | `dx = dz = 200` |
