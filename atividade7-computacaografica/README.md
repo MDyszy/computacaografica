@@ -1,34 +1,50 @@
-# Parcial 6 — Computação Gráfica
+# Parcial 7 — Computação Gráfica
 
-> Visualizador de múltiplos objetos 3D em wireframe com suporte a faces, seleção por teclado e múltiplas projeções geométricas, desenvolvido com HTML, CSS e JavaScript puro.
+> Visualizador de múltiplos objetos 3D com faces preenchidas, remoção de faces ocultas, algoritmo do pintor, cinco projeções geométricas e zoom interativo, desenvolvido com HTML, CSS e JavaScript puro.
 
 ---
 
 ## Sobre o Projeto
 
-Este repositório contém a atividade da **Parcial 6** da disciplina de **Computação Gráfica**, ministrada pelo professor **Hugo Alexandre Dantas do Nascimento** no período **2026/1**, na **Universidade Federal de Goiás — UFG**.
+Este repositório contém a atividade da **Parcial 7** da disciplina de **Computação Gráfica**, ministrada pelo professor **Hugo Alexandre Dantas do Nascimento** no período **2026/1**, na **Universidade Federal de Goiás — UFG**.
 
-O projeto é uma evolução da Parcial 5, que já contava com renderização em wireframe com DDA, transformações geométricas via teclado e as cinco projeções geométricas. Esta entrega adiciona suporte a múltiplos objetos 3D com faces coloridas, leitura de um arquivo `.dat` via `fetch` e seleção/manipulação individual de objetos.
+O projeto é uma evolução da Parcial 6, que já contava com múltiplos objetos 3D lidos de arquivo `.dat`, seleção por teclado e as cinco projeções geométricas. Esta entrega adiciona a **pintura das faces** com preenchimento por scan-line, a **remoção de faces ocultas** (back-face culling) e a ordenação de visibilidade pelo **algoritmo do pintor**, usando o campo `zMedio` de cada face.
 
 ---
 
 ## Enunciado
 
-1. Incluir na estrutura de dados de cada objeto 3D:
-   - Lista de faces com índices dos vértices (anti-horário), cor RGB em [0,1] e campo `zMedio` (usado no próximo trabalho)
-   - Valores de rotação, escala e translação por objeto
+1. Pintar as faces de cada objeto 3D com sua cor RGB, utilizando um algoritmo de preenchimento de polígonos (scan-line fill)
 
-2. Ler automaticamente no início da execução o arquivo `figure.dat` contendo um ou mais objetos 3D
+2. Remover as faces não visíveis de cada objeto (back-face culling), a partir da orientação anti-horária dos vértices das faces
 
-3. Suportar múltiplos objetos com:
-   - Lista circular navegável por **TAB** / **SHIFT+TAB**
-   - Todos os objetos visíveis simultaneamente
-   - Objeto selecionado destacado em vermelho
-   - Transformações aplicadas somente ao objeto selecionado
+3. Resolver a ordem de exibição das faces visíveis pelo algoritmo do pintor, utilizando o `zMedio` calculado para cada face
+
+4. Manter todas as funcionalidades das parciais anteriores: múltiplos objetos, seleção por TAB, transformações por objeto e as cinco projeções
 
 ---
 
 ## O que foi implementado
+
+### Pintura das faces (Scan-Line Fill)
+
+Cada face visível é preenchida com sua cor RGB pelo algoritmo de scan-line: montagem da tabela de lados (`ymin`, `ymax`, `x` do `ymin` e inverso do coeficiente angular), varredura linha a linha, cálculo das interseções, ordenação e pintura dos vãos entre pares de interseções. Lados horizontais são descartados e vértices compartilhados são tratados pela convenção `y < ymax`.
+
+### Remoção de faces ocultas (Back-Face Culling)
+
+As faces são definidas com vértices em sentido anti-horário. Após a projeção, o sinal da área do polígono em coordenadas de tela (produto vetorial 2D dos dois primeiros lados) determina a orientação: faces com `produtoZ >= 0` são visíveis. O teste é aplicado em **todas** as projeções — nas perspectivas ele permanece válido porque a divisão por `w` preserva a orientação dos polígonos à frente do observador.
+
+### Algoritmo do pintor
+
+Para cada face visível calcula-se o `zMedio` (média do Z dos vértices após as transformações geométricas). As faces são pintadas da mais distante para a mais próxima (ordem decrescente de `zMedio`), em dois níveis: primeiro os objetos são ordenados pelo `zMedio` médio de suas faces, depois as faces dentro de cada objeto.
+
+### Eixos de referência com recorte
+
+Os eixos X, Y e Z são desenhados tracejados em todas as projeções. Nas perspectivas, os segmentos são recortados em coordenadas homogêneas contra o plano `w = ε` antes da divisão por `w`, evitando o espelhamento de pontos situados atrás do observador (visível especialmente na perspectiva com dois pontos de fuga).
+
+### Zoom interativo
+
+Um fator de zoom multiplicativo é aplicado ao mapeamento universo → canvas, controlado pelo teclado (2% por quadro, com limites mínimo e máximo). O percentual atual é exibido no canto inferior direito da tela.
 
 ### Estrutura de dados
 
@@ -46,18 +62,6 @@ Cada objeto armazena:
 }
 ```
 
-### Leitura do arquivo
-
-O arquivo `figure.dat` é carregado via `fetch` logo na inicialização. O formato inclui:
-- Nome da figura e coordenadas do universo (`Xmin Xmax Ymin Ymax`)
-- Para cada objeto: nome, pontos, arestas, faces (com cor RGB), rotação, escala e translação
-
-O universo define os limites do sistema de coordenadas. As coordenadas projetadas são mapeadas ao canvas via `fatorX = canvas.width / (Xmax − Xmin)` e `fatorY = canvas.height / (Ymax − Ymin)`.
-
-### Seleção de objetos
-
-`indiceSelecionado` controla qual objeto está ativo. **TAB** incrementa e **SHIFT+TAB** decrementa com retorno circular. O objeto selecionado é desenhado em vermelho; os demais em preto. As operações de escala, rotação e translação afetam apenas o objeto selecionado.
-
 ### Projeções
 
 | Projeção | Parâmetros |
@@ -70,13 +74,30 @@ O universo define os limites do sistema de coordenadas. As coordenadas projetada
 
 ---
 
+## Controles
+
+Pressione **F1** dentro da aplicação para ver o painel completo de ajuda.
+
+| Tecla | Ação |
+|---|---|
+| `P` | Alterna entre as 5 projeções |
+| `TAB` / `SHIFT+TAB` | Seleciona o próximo / anterior objeto (destacado em vermelho) |
+| `A/Z`, `S/X`, `D/C` | Escala em X, Y e Z do objeto selecionado |
+| `F/V`, `G/B`, `H/N` | Rotação em X, Y e Z do objeto selecionado |
+| `J/M`, `K/,`, `L/.` | Translação em X, Y e Z do objeto selecionado |
+| `+` ou `=` / `-` | Zoom in / zoom out |
+| `0` | Restaura o zoom padrão |
+| `ESC` | Encerra a aplicação |
+
+---
+
 ## Como Executar
 
 O programa usa `fetch` para carregar `figure.dat`, o que exige um servidor HTTP local. Abrir o `index.html` diretamente no navegador não funciona.
 
 ```bash
 git clone https://github.com/MDyszy/computacaografica
-cd computacaografica/atividade6-computacaografica
+cd computacaografica/atividade7-computacaografica
 # Abra com Live Server (VS Code) ou qualquer servidor local
 ```
 
@@ -104,10 +125,10 @@ Tx Ty Tz                 ← translação inicial
 2. **[CompuPhase — Axonometric projections, a technical overview](https://www.compuphase.com/axometr.htm)** — formulação da matriz isométrica com cos(30°)/sin(30°): `x' = (x−z)·cos(30°)`, `y' = y + (x+z)·sin(30°)`, baseada nas normas NEN 2536 e ISO 5456-3
 3. **[Wikipedia — Isometric projection](https://en.wikipedia.org/wiki/Isometric_projection)** — definição formal da projeção isométrica e derivação geométrica dos ângulos de 30°
 4. **Hugo A. D. do Nascimento — Projeções (UFG)** — base teórica para as matrizes de perspectiva
-5. **LLM (Claude — Anthropic)** — auxílio nas matrizes de perspectiva e estrutura de dados
+5. **LLM (Claude — Anthropic)** — auxílio nas matrizes de perspectiva, back-face culling, algoritmo do pintor e recorte homogêneo dos eixos
 
 ---
 
 ## Nota sobre este README
 
-Este arquivo foi **gerado com auxílio de Inteligência Artificial**, especificamente pelo modelo **Claude Sonnet 4.6**.
+Este arquivo foi **gerado com auxílio de Inteligência Artificial**, especificamente pelo modelo **Claude** (Anthropic).
